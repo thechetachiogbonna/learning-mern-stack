@@ -7,6 +7,7 @@ import appAssert from "../utils/appAssert.js"
 import { oneYearFromNow } from "../utils/date.js"
 import SessionModel, { type SessionDocument } from "../models/session.model.js"
 import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env.js"
+import { refreshTokenSignOptions, signToken } from "../utils/jwt.js"
 
 type createAccountParams = {
   email: string,
@@ -23,16 +24,18 @@ export const createAccount = async (data: createAccountParams): Promise<any> => 
   const user = await UserModel.create({
     email: data.email,
     password: data.password
-  })
+  });
+
+  const userId = user._id;
 
   const verificationCode = await VerificationModel.create({
-    userId: user._id,
+    userId,
     type: VerificationType.emailVerification,
     expiresAt: oneYearFromNow()
   });
 
   const sessionPayload = {
-    userId: user._id
+    userId
   } as Pick<SessionDocument, "userId" | "userAgent" | "ip">
 
   if (data.ip) sessionPayload["ip"] = data.ip
@@ -40,25 +43,14 @@ export const createAccount = async (data: createAccountParams): Promise<any> => 
 
   const session = await SessionModel.create(sessionPayload);
 
-  const accessToken = jwt.sign(
-    {
-      userId: user._id,
-      sessionId: session._id
-    },
-    JWT_SECRET,
-    {
-      audience: ["user"],
-      expiresIn: "15m"
-    }
-  );
+  const accessToken = signToken({
+    userId,
+    sessionId: session._id
+  });
 
-  const refreshToken = jwt.sign(
+  const refreshToken = signToken(
     { sessionId: session._id },
-    JWT_REFRESH_SECRET,
-    {
-      audience: ["user"],
-      expiresIn: "30d"
-    }
+    refreshTokenSignOptions
   );
 
   return {
@@ -91,25 +83,14 @@ export const loginUser = async (data: loginParams): Promise<any> => {
 
   const session = await SessionModel.create(sessionPayload);
 
-  const accessToken = jwt.sign(
-    {
-      userId: user._id,
-      sessionId: session._id
-    },
-    JWT_SECRET,
-    {
-      audience: ["user"],
-      expiresIn: "15m"
-    }
-  );
+  const accessToken = signToken({
+    userId: user._id,
+    sessionId: session._id
+  });
 
-  const refreshToken = jwt.sign(
+  const refreshToken = signToken(
     { sessionId: session._id },
-    JWT_REFRESH_SECRET,
-    {
-      audience: ["user"],
-      expiresIn: "30d"
-    }
+    refreshTokenSignOptions
   );
 
   return {
