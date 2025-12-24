@@ -3,8 +3,8 @@ import { fifteenMinutesFromNow, thirtyDaysFromNow } from "./date.js";
 
 type setAuthCookiessParams = {
   res: Response,
-  refreshToken: string,
   accessToken: string
+  refreshToken: string,
 };
 
 const secure = process.env.NODE_ENV !== "development";

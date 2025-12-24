@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { CONFLICT } from "../config/http.js"
+import { BAD_REQUEST, CONFLICT } from "../config/http.js"
 import VerificationType from "../constants/verificationTypes.js"
 import UserModel from "../models/user.model.js"
 import VerificationModel from "../models/verification.model.js"
@@ -8,7 +8,7 @@ import { oneYearFromNow } from "../utils/date.js"
 import SessionModel, { type SessionDocument } from "../models/session.model.js"
 import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env.js"
 
-export type createAccountParams = {
+type createAccountParams = {
   email: string,
   password: string,
   ip?: string | undefined,
@@ -63,7 +63,57 @@ export const createAccount = async (data: createAccountParams): Promise<any> => 
 
   return {
     user: user.omitPassword(),
-    refreshToken,
-    accessToken
+    accessToken,
+    refreshToken
+  };
+}
+
+type loginParams = {
+  email: string,
+  password: string,
+  ip?: string | undefined,
+  userAgent?: string | undefined
+}
+
+export const loginUser = async (data: loginParams): Promise<any> => {
+  const user = await UserModel.findOne({ email: data.email });
+  appAssert(user, BAD_REQUEST, "Invalid email or password.");
+
+  const isPasswordValid = await user.comparePassword(data.password);
+  appAssert(isPasswordValid, BAD_REQUEST, "Invalid email or password.");
+
+  const sessionPayload = {
+    userId: user._id
+  } as Pick<SessionDocument, "userId" | "userAgent" | "ip">
+
+  if (data.ip) sessionPayload["ip"] = data.ip
+  if (data.userAgent) sessionPayload["userAgent"] = data.userAgent
+
+  const session = await SessionModel.create(sessionPayload);
+
+  const accessToken = jwt.sign(
+    {
+      userId: user._id,
+      sessionId: session._id
+    },
+    JWT_SECRET,
+    {
+      audience: ["user"],
+      expiresIn: "15m"
+    }
+  );
+
+  const refreshToken = jwt.sign(
+    { sessionId: session._id },
+    JWT_REFRESH_SECRET,
+    {
+      audience: ["user"],
+      expiresIn: "30d"
+    }
+  );
+
+  return {
+    accessToken,
+    refreshToken
   };
 }
