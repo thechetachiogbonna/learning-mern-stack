@@ -11,8 +11,6 @@ export const registerHandler = catchErrors(async (req, res) => {
     userAgent: req.headers["user-agent"]
   })
 
-  console.log(request);
-
   const { user, refreshToken, accessToken } = await createAccount({
     email: request.email,
     password: request.password,
