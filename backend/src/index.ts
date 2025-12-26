@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-app.get("api/", (req, res) => {
+app.get("/", (req, res) => {
   return res.status(OK).json({ message: "Server is running" });
 });
 

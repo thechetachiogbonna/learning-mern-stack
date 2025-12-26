@@ -1,8 +1,10 @@
 import { createAccount, loginUser } from "../services/auth.service.js";
 import catchErrors from "../utils/catchErrors.js";
-import setAuthCookies from "../utils/setAuthCookies.js";
+import { setAuthCookies, clearAuthCookies } from "../utils/cookie.js";
 import { CREATED, OK } from "../config/http.js";
 import { loginValidation, registerValidation } from "../validations/auth.js";
+import { verifyToken } from "../utils/jwt.js";
+import SessionModel from "../models/session.model.js";
 
 export const registerHandler = catchErrors(async (req, res) => {
   const request = registerValidation.parse({
@@ -34,8 +36,20 @@ export const loginHandler = catchErrors(async (req, res) => {
     password: request.password,
     ip: request.ip,
     userAgent: request.userAgent
-  })
+  });
 
   return setAuthCookies({ res, accessToken, refreshToken })
     .status(OK).json({ message: "Logged in successfully." });
+});
+
+export const logoutHandler = catchErrors(async (req, res) => {
+  const { accessToken } = req.cookies;
+  const payload = verifyToken(accessToken);
+
+  if (payload) {
+    await SessionModel.findByIdAndDelete(payload?.sessionId)
+  }
+
+  return clearAuthCookies(res)
+    .status(OK).json({ message: "Logged out successfully." });
 });
