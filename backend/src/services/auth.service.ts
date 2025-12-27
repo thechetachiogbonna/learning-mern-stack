@@ -1,13 +1,11 @@
-import jwt from "jsonwebtoken"
-import { BAD_REQUEST, CONFLICT } from "../config/http.js"
+import { BAD_REQUEST, CONFLICT, UNAUTHORIZED } from "../config/http.js"
 import VerificationType from "../constants/verificationTypes.js"
 import UserModel from "../models/user.model.js"
 import VerificationModel from "../models/verification.model.js"
 import appAssert from "../utils/appAssert.js"
-import { oneYearFromNow } from "../utils/date.js"
+import { ONE_DAY_IN_MS, oneYearFromNow, thirtyDaysFromNow } from "../utils/date.js"
 import SessionModel, { type SessionDocument } from "../models/session.model.js"
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../constants/env.js"
-import { refreshTokenSignOptions, signToken } from "../utils/jwt.js"
+import { refreshTokenSignOptions, signToken, verifyToken, type RefreshTokenPayload } from "../utils/jwt.js"
 
 type createAccountParams = {
   email: string,
@@ -16,7 +14,7 @@ type createAccountParams = {
   userAgent?: string | undefined
 }
 
-export const createAccount = async (data: createAccountParams): Promise<any> => {
+export const createAccount = async (data: createAccountParams) => {
   const existingUser = await UserModel.exists({ email: data.email })
 
   appAssert(!existingUser, CONFLICT, "Email is already in use.")
@@ -67,7 +65,7 @@ type loginParams = {
   userAgent?: string | undefined
 }
 
-export const loginUser = async (data: loginParams): Promise<any> => {
+export const loginUser = async (data: loginParams) => {
   const user = await UserModel.findOne({ email: data.email });
   appAssert(user, BAD_REQUEST, "Invalid email or password.");
 
@@ -98,3 +96,40 @@ export const loginUser = async (data: loginParams): Promise<any> => {
     refreshToken
   };
 }
+
+export const refreshUserAccessToken = async (refreshToken: string) => {
+  const payload = verifyToken<RefreshTokenPayload>(refreshToken, {
+    secret: refreshTokenSignOptions.secret
+  })
+  appAssert(payload, UNAUTHORIZED, "Invalid refresh token.")
+
+  const session = await SessionModel.findById(payload.sessionId);
+  const now = Date.now();
+  appAssert(session && session.expiresAt.getTime() > now, UNAUTHORIZED, "Session expired.")
+
+  // refreshToken needs to be refreshed
+  // if the refreshToken will expire in a day or less
+  const sessionNeedsRefresh = session.expiresAt.getTime() - now <= ONE_DAY_IN_MS;
+  if (sessionNeedsRefresh) {
+    session.expiresAt = thirtyDaysFromNow();
+    await session.save();
+  }
+
+  const newRefreshToken = sessionNeedsRefresh
+    ? signToken({
+      sessionId: session._id
+    },
+      refreshTokenSignOptions
+    )
+    : undefined
+
+  const accessToken = signToken({
+    userId: session.userId,
+    sessionId: session._id
+  });
+
+  return {
+    accessToken,
+    newRefreshToken
+  }
+};

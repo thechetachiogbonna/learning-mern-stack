@@ -3,7 +3,7 @@ import cors from "cors"
 import connectToDatabase from "./config/db.js";
 import { APP_ORIGIN, PORT } from "./constants/env.js";
 import cookieParser from "cookie-parser";
-import errorHandler from "./middleware/errorHandler.js";
+import errorHandler from "./middlewares/error.middleware.js";
 import { OK } from "./config/http.js";
 import authRoutes from "./routes/auth.route.js";
 
