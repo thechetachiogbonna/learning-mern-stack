@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { loginHandler, logoutHandler, refreshHandler, registerHandler, verifyEmailHandler } from "../controllers/auth.controller.js";
+import { forgotPasswordHandler, loginHandler, logoutHandler, refreshHandler, registerHandler, verifyEmailHandler } from "../controllers/auth.controller.js";
 
 const authRoutes = Router();
 
@@ -8,5 +8,6 @@ authRoutes.post("/login", loginHandler);
 authRoutes.get("/refresh", refreshHandler);
 authRoutes.get("/logout", logoutHandler);
 authRoutes.get("/email/verify/:code", verifyEmailHandler);
+authRoutes.post("/password/forgot", forgotPasswordHandler);
 
 export default authRoutes;

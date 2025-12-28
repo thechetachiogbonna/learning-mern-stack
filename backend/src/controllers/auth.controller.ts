@@ -1,4 +1,4 @@
-import { createAccount, loginUser, refreshUserAccessToken, verifyEmail } from "../services/auth.service.js";
+import { createAccount, forgotPassword, loginUser, refreshUserAccessToken, verifyEmail } from "../services/auth.service.js";
 import catchErrors from "../utils/catchErrors.js";
 import { setAuthCookies, clearAuthCookies, getRefreshTokenCookieOptions, getAccessTokenCookieOptions } from "../utils/cookie.js";
 import { CREATED, OK, UNAUTHORIZED } from "../config/http.js";
@@ -77,4 +77,12 @@ export const verifyEmailHandler = catchErrors(async (req, res) => {
   await verifyEmail(code);
 
   return res.status(OK).json({ message: "Email verified successfully." });
+});
+
+export const forgotPasswordHandler = catchErrors(async (req, res) => {
+  const email = z.email().max(255).parse(req.body.email);
+
+  await forgotPassword(email);
+
+  return res.status(OK).json({ message: "Password reset link sent." });
 });

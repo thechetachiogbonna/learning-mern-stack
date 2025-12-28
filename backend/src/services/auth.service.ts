@@ -3,9 +3,12 @@ import VerificationType from "../constants/verificationTypes.js"
 import UserModel from "../models/user.model.js"
 import VerificationModel from "../models/verification.model.js"
 import appAssert from "../utils/appAssert.js"
-import { ONE_DAY_IN_MS, oneYearFromNow, thirtyDaysFromNow } from "../utils/date.js"
+import { ONE_DAY_IN_MS, oneHourFromNow, thirtyDaysFromNow } from "../utils/date.js"
 import SessionModel, { type SessionDocument } from "../models/session.model.js"
 import { refreshTokenSignOptions, signToken, verifyToken, type RefreshTokenPayload } from "../utils/jwt.js"
+import sendEmail from "../utils/sendEmail.js"
+import { getPasswordResetTemplate, getVerifyEmailTemplate } from "../utils/emailTemplates.js"
+import { APP_ORIGIN } from "../constants/env.js"
 
 type createAccountParams = {
   email: string,
@@ -29,8 +32,13 @@ export const createAccount = async (data: createAccountParams) => {
   const verificationCode = await VerificationModel.create({
     userId,
     type: VerificationType.emailVerification,
-    expiresAt: oneYearFromNow()
+    expiresAt: oneHourFromNow()
   });
+  const url = `${APP_ORIGIN}/email-verify?code=${verificationCode._id}`
+  await sendEmail({
+    to: user.email,
+    ...getVerifyEmailTemplate(url)
+  })
 
   const sessionPayload = {
     userId
@@ -158,4 +166,24 @@ export const verifyEmail = async (code: string) => {
   return {
     user: updatedUser.omitPassword()
   }
+}
+
+export const forgotPassword = async (email: string) => {
+  const user = await UserModel.findOne({ email });
+  appAssert(user, NOT_FOUND, "User not found.")
+
+  const verificationCode = await VerificationModel.create({
+    userId: user._id,
+    type: VerificationType.passwordReset,
+    expiresAt: oneHourFromNow()
+  });
+  const url = `${APP_ORIGIN}/reset-password?code=${verificationCode._id}&exp=${verificationCode.expiresAt.getTime()}`
+  const { success } = await sendEmail({
+    to: user.email,
+    ...getPasswordResetTemplate(url)
+  })
+  appAssert(success, INTERNAL_SERVER_ERROR, "Failed to send password reset email. Please try again later.")
+
+  console.log("Password reset link:", url);
+  return;
 }
