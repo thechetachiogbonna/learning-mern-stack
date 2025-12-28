@@ -9,6 +9,7 @@ import { refreshTokenSignOptions, signToken, verifyToken, type RefreshTokenPaylo
 import sendEmail from "../utils/sendEmail.js"
 import { getPasswordResetTemplate, getVerifyEmailTemplate } from "../utils/emailTemplates.js"
 import { APP_ORIGIN } from "../constants/env.js"
+import { hashValue } from "../utils/bcrypt.js"
 
 type createAccountParams = {
   email: string,
@@ -184,6 +185,30 @@ export const forgotPassword = async (email: string) => {
   })
   appAssert(success, INTERNAL_SERVER_ERROR, "Failed to send password reset email. Please try again later.")
 
-  console.log("Password reset link:", url);
   return;
+}
+
+export const resetPassword = async (data: { verificationCode: string, password: string }) => {
+  const verificationCode = await VerificationModel.findOne(
+    {
+      _id: data.verificationCode,
+      type: VerificationType.passwordReset,
+      expiresAt: { $gt: new Date() }
+    }
+  );
+  appAssert(verificationCode, NOT_FOUND, "Expired or invalid password reset code.");
+
+  const user = await UserModel.findByIdAndUpdate(
+    verificationCode.userId,
+    {
+      password: await hashValue(data.password)
+    }
+  )
+  appAssert(user, INTERNAL_SERVER_ERROR, "Internal server error.");
+
+  await verificationCode.deleteOne();
+
+  return {
+    user: user.omitPassword()
+  };
 }

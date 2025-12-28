@@ -13,3 +13,8 @@ export const registerValidation = loginValidation.extend({
   message: "Passwords do not match",
   path: ["confirmPassword"]
 });
+
+export const resetPasswordValidation = z.object({
+  verificationCode: z.string().length(24),
+  password: z.string().min(6).max(255)
+});
