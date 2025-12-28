@@ -1,4 +1,4 @@
-import { BAD_REQUEST, CONFLICT, UNAUTHORIZED } from "../config/http.js"
+import { BAD_REQUEST, CONFLICT, INTERNAL_SERVER_ERROR, NOT_FOUND, UNAUTHORIZED } from "../config/http.js"
 import VerificationType from "../constants/verificationTypes.js"
 import UserModel from "../models/user.model.js"
 import VerificationModel from "../models/verification.model.js"
@@ -133,3 +133,29 @@ export const refreshUserAccessToken = async (refreshToken: string) => {
     newRefreshToken
   }
 };
+
+export const verifyEmail = async (code: string) => {
+  const verificationCode = await VerificationModel.findOne(
+    {
+      _id: code,
+      type: VerificationType.emailVerification,
+      expiresAt: { $gt: new Date() }
+    }
+  );
+  appAssert(verificationCode, NOT_FOUND, "Expired or invalid verification code");
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    verificationCode.userId,
+    {
+      emailVerified: true
+    },
+    {
+      new: true
+    }
+  )
+  appAssert(updatedUser, INTERNAL_SERVER_ERROR, "Internal server error.");
+
+  return {
+    user: updatedUser.omitPassword()
+  }
+}

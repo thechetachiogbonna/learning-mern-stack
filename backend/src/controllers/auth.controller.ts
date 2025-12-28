@@ -1,4 +1,4 @@
-import { createAccount, loginUser, refreshUserAccessToken } from "../services/auth.service.js";
+import { createAccount, loginUser, refreshUserAccessToken, verifyEmail } from "../services/auth.service.js";
 import catchErrors from "../utils/catchErrors.js";
 import { setAuthCookies, clearAuthCookies, getRefreshTokenCookieOptions, getAccessTokenCookieOptions } from "../utils/cookie.js";
 import { CREATED, OK, UNAUTHORIZED } from "../config/http.js";
@@ -6,6 +6,7 @@ import { loginValidation, registerValidation } from "../validations/auth.js";
 import { verifyToken } from "../utils/jwt.js";
 import SessionModel from "../models/session.model.js";
 import appAssert from "../utils/appAssert.js";
+import z from "zod";
 
 export const registerHandler = catchErrors(async (req, res) => {
   const request = registerValidation.parse({
@@ -63,9 +64,17 @@ export const logoutHandler = catchErrors(async (req, res) => {
   const payload = verifyToken(accessToken || "");
 
   if (payload) {
-    await SessionModel.findByIdAndDelete(payload?.sessionId)
+    await SessionModel.findByIdAndDelete(payload.sessionId)
   }
 
   return clearAuthCookies(res)
     .status(OK).json({ message: "Logged out successfully." });
+});
+
+export const verifyEmailHandler = catchErrors(async (req, res) => {
+  const code = z.string().length(24).parse(req.params.code);
+
+  await verifyEmail(code);
+
+  return res.status(OK).json({ message: "Email verified successfully." });
 });
