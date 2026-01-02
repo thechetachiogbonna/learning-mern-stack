@@ -3,6 +3,7 @@ import { forgotPasswordHandler, loginHandler, logoutHandler, refreshHandler, reg
 
 const authRoutes = Router();
 
+// prefix - /api/auth
 authRoutes.post("/register", registerHandler);
 authRoutes.post("/login", loginHandler);
 authRoutes.get("/refresh", refreshHandler);

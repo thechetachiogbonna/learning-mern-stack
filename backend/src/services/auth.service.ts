@@ -164,6 +164,8 @@ export const verifyEmail = async (code: string) => {
   )
   appAssert(updatedUser, INTERNAL_SERVER_ERROR, "Internal server error.");
 
+  await verificationCode.deleteOne();
+
   return {
     user: updatedUser.omitPassword()
   }
@@ -178,7 +180,9 @@ export const forgotPassword = async (email: string) => {
     type: VerificationType.passwordReset,
     expiresAt: oneHourFromNow()
   });
+
   const url = `${APP_ORIGIN}/reset-password?code=${verificationCode._id}&exp=${verificationCode.expiresAt.getTime()}`
+
   const { success } = await sendEmail({
     to: user.email,
     ...getPasswordResetTemplate(url)
@@ -207,6 +211,9 @@ export const resetPassword = async (data: { verificationCode: string, password: 
   appAssert(user, INTERNAL_SERVER_ERROR, "Internal server error.");
 
   await verificationCode.deleteOne();
+  await SessionModel.deleteMany({
+    _id: verificationCode.userId
+  });
 
   return {
     user: user.omitPassword()
