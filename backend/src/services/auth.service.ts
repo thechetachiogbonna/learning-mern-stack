@@ -14,7 +14,7 @@ import { hashValue } from "../utils/bcrypt.js"
 type createAccountParams = {
   email: string,
   password: string,
-  ip?: string | undefined,
+  ipAddress?: string | undefined,
   userAgent?: string | undefined
 }
 
@@ -43,9 +43,9 @@ export const createAccount = async (data: createAccountParams) => {
 
   const sessionPayload = {
     userId
-  } as Pick<SessionDocument, "userId" | "userAgent" | "ip">
+  } as Pick<SessionDocument, "userId" | "userAgent" | "ipAddress">
 
-  if (data.ip) sessionPayload["ip"] = data.ip
+  if (data.ipAddress) sessionPayload["ipAddress"] = data.ipAddress
   if (data.userAgent) sessionPayload["userAgent"] = data.userAgent
 
   const session = await SessionModel.create(sessionPayload);
@@ -70,7 +70,7 @@ export const createAccount = async (data: createAccountParams) => {
 type loginParams = {
   email: string,
   password: string,
-  ip?: string | undefined,
+  ipAddress?: string | undefined,
   userAgent?: string | undefined
 }
 
@@ -83,10 +83,10 @@ export const loginUser = async (data: loginParams) => {
 
   const sessionPayload = {
     userId: user._id
-  } as Pick<SessionDocument, "userId" | "userAgent" | "ip">
+  } as Pick<SessionDocument, "userId" | "userAgent" | "ipAddress">
 
-  if (data.ip) sessionPayload["ip"] = data.ip
-  if (data.userAgent) sessionPayload["userAgent"] = data.userAgent
+  if (data.ipAddress) sessionPayload["ipAddress"] = data.ipAddress;
+  if (data.userAgent) sessionPayload["userAgent"] = data.userAgent;
 
   const session = await SessionModel.create(sessionPayload);
 

@@ -11,14 +11,14 @@ import z from "zod";
 export const registerHandler = catchErrors(async (req, res) => {
   const request = registerValidation.parse({
     ...req.body,
-    ip: req.ip,
+    ipAddress: req.ip,
     userAgent: req.headers["user-agent"]
   })
 
   const { user, accessToken, refreshToken } = await createAccount({
     email: request.email,
     password: request.password,
-    ip: request.ip,
+    ipAddress: request.ipAddress,
     userAgent: request.userAgent
   })
 
@@ -29,14 +29,14 @@ export const registerHandler = catchErrors(async (req, res) => {
 export const loginHandler = catchErrors(async (req, res) => {
   const request = loginValidation.parse({
     ...req.body,
-    ip: req.ip,
+    ipAddress: req.ip,
     userAgent: req.headers["user-agent"]
   })
 
   const { accessToken, refreshToken } = await loginUser({
     email: request.email,
     password: request.password,
-    ip: request.ip,
+    ipAddress: request.ipAddress,
     userAgent: request.userAgent
   });
 

@@ -3,7 +3,7 @@ import { thirtyDaysFromNow } from "../utils/date.js";
 
 export interface SessionDocument extends mongoose.Document {
   userId: mongoose.Types.ObjectId,
-  ip?: string,
+  ipAddress?: string,
   userAgent?: string,
   createdAt: Date,
   expiresAt: Date
@@ -16,7 +16,7 @@ const sessionSchema = new mongoose.Schema<SessionDocument>({
     required: true,
     index: true
   },
-  ip: {
+  ipAddress: {
     type: String
   },
   userAgent: {
