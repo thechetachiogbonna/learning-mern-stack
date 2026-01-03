@@ -3,7 +3,7 @@ import userHandler from "../controllers/user.controller.js";
 
 const userRoutes = Router();
 
-// prefix - /api/users
+// prefix - /api/user
 userRoutes.get("/", userHandler);
 
 export default userRoutes;
