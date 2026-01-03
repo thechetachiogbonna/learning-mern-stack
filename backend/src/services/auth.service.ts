@@ -210,10 +210,12 @@ export const resetPassword = async (data: { verificationCode: string, password: 
   )
   appAssert(user, INTERNAL_SERVER_ERROR, "Internal server error.");
 
-  await verificationCode.deleteOne();
-  await SessionModel.deleteMany({
-    _id: verificationCode.userId
-  });
+  await Promise.allSettled([
+    verificationCode.deleteOne(),
+    SessionModel.deleteMany({
+      userId: verificationCode.userId
+    })
+  ]);
 
   return {
     user: user.omitPassword()
