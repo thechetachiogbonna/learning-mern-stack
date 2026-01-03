@@ -13,13 +13,13 @@ const authenticate: RequestHandler = async (req, res, next) => {
 
     const accessTokenPayload = verifyToken(accessToken);
 
-    appAssert(accessTokenPayload, UNAUTHORIZED, "Invalid access token");
+    appAssert(accessTokenPayload, UNAUTHORIZED, "Invalid or expired access token", AppErrorCode.InvalidAccessToken);
 
     const session = await SessionModel.findOne({
       _id: accessTokenPayload.sessionId,
       userId: accessTokenPayload.userId
     });
-    appAssert(session, UNAUTHORIZED, "Session not found");
+    appAssert(session && session.expiresAt.getTime() > Date.now(), UNAUTHORIZED, "Invalid or expired session.");
 
     req.userId = accessTokenPayload.userId;
     req.sessionId = accessTokenPayload.sessionId;
