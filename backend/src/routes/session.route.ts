@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getSessionsHandler } from "../controllers/session.controller.js";
+import { deleteSessionHandler, getSessionsHandler } from "../controllers/session.controller.js";
 
 const sessionRoutes = Router();
 
 // prefix - /api/sessions
 sessionRoutes.get("/", getSessionsHandler)
+sessionRoutes.delete("/:id", deleteSessionHandler);
 
 export default sessionRoutes;
