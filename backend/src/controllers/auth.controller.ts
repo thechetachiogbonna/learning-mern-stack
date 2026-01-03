@@ -46,7 +46,7 @@ export const loginHandler = catchErrors(async (req, res) => {
 
 export const refreshHandler = catchErrors(async (req, res) => {
   const refreshToken = req.cookies.refreshToken as string | undefined;
-  appAssert(refreshToken, UNAUTHORIZED, "Missing refresh token")
+  appAssert(refreshToken, UNAUTHORIZED, "Unauthorized.");
 
   const { accessToken, newRefreshToken } = await refreshUserAccessToken(refreshToken)
 
