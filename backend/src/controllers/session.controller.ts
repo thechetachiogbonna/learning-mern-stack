@@ -1,5 +1,5 @@
 import z from "zod";
-import { BAD_REQUEST, NOT_FOUND, OK } from "../config/http.js";
+import { NOT_FOUND, OK } from "../config/http.js";
 import SessionModel from "../models/session.model.js";
 import appAssert from "../utils/appAssert.js";
 import catchErrors from "../utils/catchErrors.js";
@@ -19,9 +19,13 @@ export const getSessionsHandler = catchErrors(async (req, res) => {
 });
 
 export const deleteSessionHandler = catchErrors(async (req, res) => {
-  const id = z.string().length(24).parse(req.params.id);
+  const sessionId = z.string().length(24).parse(req.params.id);
+  const userId = req.userId;
 
-  const session = await SessionModel.findByIdAndDelete(id);
+  const session = await SessionModel.findOneAndDelete({
+    _id: sessionId,
+    userId
+  });
 
   appAssert(session, NOT_FOUND, "Session not found");
 
