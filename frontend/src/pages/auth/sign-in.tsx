@@ -17,18 +17,17 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { registerUserSchema } from "@/lib/validations"
+import { loginSchema } from "@/lib/validations"
 import { NavLink } from "react-router"
 
-function SignUp() {
+function SignIn() {
   const form = useForm({
     defaultValues: {
       email: "",
-      password: "",
-      confirmPassword: ""
+      password: ""
     },
     validators: {
-      onSubmit: registerUserSchema
+      onSubmit: loginSchema
     },
     onSubmit: async ({ value }) => {
       toast("You submitted the following values:", {
@@ -53,12 +52,12 @@ function SignUp() {
       <CardHeader className="flex flex-col justify-center items-center">
         <CardTitle>Learning Mern Stack</CardTitle>
         <CardDescription>
-          Sign up to continue to Learning Mern Stack
+          Sign in to continue to Learning Mern Stack
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          id="sign-up-form"
+          id="sign-in-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
@@ -126,53 +125,22 @@ function SignUp() {
                 )
               }}
             />
-
-            <form.Field
-              name="confirmPassword"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel
-                      htmlFor={field.name}
-                      className="capitalize"
-                    >
-                      {field.name}
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Confirm Password"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
           </FieldGroup>
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <Button
           type="submit"
-          form="sign-up-form"
+          form="sign-in-form"
           className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
         >
-          Create Account
+          Log In
         </Button>
 
         <div>
-          Already have an account?{' '}
-          <NavLink to="/auth/sign-in" className="text-pink-600 hover:underline">
-            Sign In
+          Don't have an account?{' '}
+          <NavLink to="/auth/sign-up" className="text-pink-600 hover:underline">
+            Sign Up
           </NavLink>
         </div>
       </CardFooter>
@@ -180,4 +148,4 @@ function SignUp() {
   )
 }
 
-export default SignUp
+export default SignIn

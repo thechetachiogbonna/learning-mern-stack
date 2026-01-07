@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { Home, SignUp } from "./pages";
+import { Home, SignIn, SignUp } from "./pages";
 import RootLayout from "./layouts/root-layout";
 import AuthLayout from "./layouts/auth-layout";
 
@@ -10,6 +10,7 @@ function App() {
       {/* Public Routes */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="sign-up" element={<SignUp />} />
+        <Route path="sign-in" element={<SignIn />} />
       </Route>
 
       {/* Protected Routes */}
