@@ -1,6 +1,6 @@
 function Home() {
   return (
-    <div>Home</div>
+    <div className="underline text-2xl">Home</div>
   )
 }
 
