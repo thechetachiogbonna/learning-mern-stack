@@ -1,4 +1,3 @@
-import * as React from "react"
 import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -18,9 +17,28 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { registerUserSchema } from "@/lib/validations"
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
+import { useMutation } from "@tanstack/react-query"
+import { registerUser } from "@/lib/api"
 
 function SignUp() {
+  const navigate = useNavigate()
+
+  const {
+    mutate,
+    isPending
+  } = useMutation({
+    mutationFn: (user: { email: string; password: string, confirmPassword: string }) => registerUser(user),
+    onSuccess: () => {
+      form.reset()
+      toast.success("Account created successfully!")
+      navigate("/")
+    },
+    onError: (error: Error) => {
+      toast.error(`Error: ${error.message}`)
+    }
+  })
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -31,21 +49,12 @@ function SignUp() {
       onSubmit: registerUserSchema
     },
     onSubmit: async ({ value }) => {
-      toast("You submitted the following values:", {
-        description: (
-          <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-            <code>{JSON.stringify(value, null, 2)}</code>
-          </pre>
-        ),
-        position: "bottom-right",
-        classNames: {
-          content: "flex flex-col gap-2",
-        },
-        style: {
-          "--border-radius": "calc(var(--radius)  + 4px)",
-        } as React.CSSProperties,
+      mutate({
+        email: value.email,
+        password: value.password,
+        confirmPassword: value.confirmPassword
       })
-    },
+    }
   })
 
   return (
@@ -165,8 +174,9 @@ function SignUp() {
           type="submit"
           form="sign-up-form"
           className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
+          disabled={isPending}
         >
-          Create Account
+          {isPending ? "Creating Account..." : "Create Account"}
         </Button>
 
         <div>
