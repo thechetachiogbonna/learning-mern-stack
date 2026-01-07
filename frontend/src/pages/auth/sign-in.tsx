@@ -1,4 +1,3 @@
-import * as React from "react"
 import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -18,9 +17,28 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { loginSchema } from "@/lib/validations"
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
+import { useMutation } from "@tanstack/react-query"
+import { loginUser } from "@/lib/api"
 
 function SignIn() {
+  const navigate = useNavigate()
+
+  const {
+    mutate,
+    isPending
+  } = useMutation({
+    mutationFn: async (data: { email: string; password: string }) => loginUser(data),
+    onSuccess: () => {
+      form.reset()
+      toast.success("Logged in successfully!")
+      navigate("/")
+    },
+    onError: (error: Error) => {
+      toast.error(`Error: ${error.message}`)
+    }
+  })
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -29,22 +47,9 @@ function SignIn() {
     validators: {
       onSubmit: loginSchema
     },
-    onSubmit: async ({ value }) => {
-      toast("You submitted the following values:", {
-        description: (
-          <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-            <code>{JSON.stringify(value, null, 2)}</code>
-          </pre>
-        ),
-        position: "bottom-right",
-        classNames: {
-          content: "flex flex-col gap-2",
-        },
-        style: {
-          "--border-radius": "calc(var(--radius)  + 4px)",
-        } as React.CSSProperties,
-      })
-    },
+    onSubmit: ({ value }) => {
+      mutate(value)
+    }
   })
 
   return (
@@ -134,7 +139,7 @@ function SignIn() {
           form="sign-in-form"
           className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
         >
-          Log In
+          {isPending ? "Logging In..." : "Log In"}
         </Button>
 
         <div>

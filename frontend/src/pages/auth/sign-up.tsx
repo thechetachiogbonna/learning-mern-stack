@@ -28,7 +28,7 @@ function SignUp() {
     mutate,
     isPending
   } = useMutation({
-    mutationFn: (user: { email: string; password: string, confirmPassword: string }) => registerUser(user),
+    mutationFn: (data: { email: string; password: string, confirmPassword: string }) => registerUser(data),
     onSuccess: () => {
       form.reset()
       toast.success("Account created successfully!")
@@ -48,7 +48,7 @@ function SignUp() {
     validators: {
       onSubmit: registerUserSchema
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       mutate({
         email: value.email,
         password: value.password,
