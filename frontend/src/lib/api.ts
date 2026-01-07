@@ -7,3 +7,7 @@ export const registerUser = async (userData: { email: string; password: string, 
 export const loginUser = async (userData: { email: string; password: string }) => {
   return API.post("/auth/login", userData);
 };
+
+export const fetchCurrentUser = async () => {
+  return API.get("/user");
+}

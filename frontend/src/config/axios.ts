@@ -1,13 +1,23 @@
 import axios from "axios";
 
-const API = axios.create({
+const options = {
   baseURL: "http://localhost:3000/api",
   withCredentials: true,
-});
+};
+
+const TokenFreshAPI = axios.create(options);
+
+const API = axios.create(options);
 
 API.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
+    const { response, config } = error;
+    if (response?.status === 401 && response.data?.errorCode === "InvalidAccessToken") {
+      console.log(response.data?.errorCode)
+      await TokenFreshAPI.get("/auth/refresh")
+      return API(config);
+    }
     return Promise.reject(error.response?.data || error.message);
   }
 )

@@ -20,21 +20,17 @@ import { registerUserSchema } from "@/lib/validations"
 import { NavLink, useNavigate } from "react-router"
 import { useMutation } from "@tanstack/react-query"
 import { registerUser } from "@/lib/api"
-import useUserStore from "@/store/useUserStore"
 
 function SignUp() {
   const navigate = useNavigate();
-
-  const { setUser } = useUserStore();
 
   const {
     mutate,
     isPending
   } = useMutation({
     mutationFn: (data: { email: string; password: string, confirmPassword: string }) => registerUser(data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       form.reset()
-      setUser(data as unknown as User);
       toast.success("Account created successfully!")
       navigate("/")
     },
