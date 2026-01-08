@@ -37,7 +37,6 @@ function EmailNotVerifiedAlert() {
   )
 }
 
-
 function Home() {
   const { user } = useUserStore();
 

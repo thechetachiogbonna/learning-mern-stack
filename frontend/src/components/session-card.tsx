@@ -2,8 +2,9 @@ import queryClient from '@/config/queryClient';
 import { revokeSession } from '@/lib/api';
 import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge, ClockIcon, MapPinIcon, MonitorIcon, ShieldCheckIcon } from 'lucide-react';
+import { ClockIcon, Loader2, MapPinIcon, MonitorIcon, ShieldCheckIcon, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 function SessionCard({ session }: { session: Session }) {
   const { mutate: removeSession, isPending: isRemovingSession } = useMutation({
@@ -19,21 +20,33 @@ function SessionCard({ session }: { session: Session }) {
   });
 
   return (
-    <Card key={session._id} className="max-w-xl">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0">
-        <div className="space-y-1">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <MonitorIcon className="h-4 w-4" />
-            Active Session
-          </CardTitle>
+    <Card className="max-w-xl mx-auto">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-0">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <MonitorIcon className="h-4 w-4" />
+          Active Session
+        </CardTitle>
 
-          {session.isCurrent && (
-            <Badge className="w-fit">
-              <ShieldCheckIcon className="mr-1 h-3 w-3" />
-              Current session
+        {session.isCurrent
+          ? (
+            <Badge className="mt-2 flex items-center gap-2">
+              <ShieldCheckIcon className="h-4 w-4" />
+              Current Session
             </Badge>
+          ) : (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="mt-2"
+              onClick={() => removeSession(session._id)}
+              disabled={isRemovingSession}
+            >
+              {isRemovingSession
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <Trash2 className="h-4 w-4" />
+              }
+            </Button>
           )}
-        </div>
       </CardHeader>
 
       <CardContent className="space-y-3 text-sm">
@@ -55,18 +68,6 @@ function SessionCard({ session }: { session: Session }) {
           <ClockIcon className="h-4 w-4 text-muted-foreground" />
           <span>Expires: {session.expiresAt}</span>
         </div>
-
-        {!session.isCurrent && (
-          <Button
-            variant="destructive"
-            size="sm"
-            className="mt-2"
-            onClick={() => removeSession(session._id)}
-            disabled={isRemovingSession}
-          >
-            {isRemovingSession ? "Revoking..." : "Revoke session"}
-          </Button>
-        )}
       </CardContent>
     </Card>
   )
