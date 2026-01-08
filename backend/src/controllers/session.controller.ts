@@ -14,7 +14,7 @@ export const getSessionsHandler = catchErrors(async (req, res) => {
     sessions: sessions.map((session) => ({
       ...session.toObject(),
       ...(session._id.toString() === currentSessionId.toString() && { isCurrent: true })
-    }))
+    })).sort((a, b) => (a.isCurrent ? -1 : 0))
   });
 });
 
