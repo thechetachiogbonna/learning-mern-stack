@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, redirect, Route } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { Home, SignIn, SignUp } from "./pages";
+import { Home, Settings, SignIn, SignUp } from "./pages";
 import RootLayout from "./layouts/root-layout";
 import AuthLayout from "./layouts/auth-layout";
 import useUserStore from "./store/useUserStore";
@@ -8,11 +8,13 @@ import useUserStore from "./store/useUserStore";
 function App() {
   const { getUser } = useUserStore();
 
-  const authLoader = async () => {
+  const loader = async () => {
     const user = await getUser();
+
     if (!user) {
       throw redirect("/auth/sign-in");
     }
+
     return user;
   }
 
@@ -29,9 +31,11 @@ function App() {
       <Route
         path="/"
         element={<RootLayout />}
-        loader={authLoader}
+        loader={loader}
       >
         <Route index element={<Home />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="*" element={<div>404 - Not Foundettings Page</div>} />
       </Route>
     </>
   ));

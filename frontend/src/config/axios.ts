@@ -14,7 +14,6 @@ API.interceptors.response.use(
   async (error) => {
     const { response, config } = error;
     if (response?.status === 401 && response.data?.errorCode === "InvalidAccessToken") {
-      console.log(response.data?.errorCode)
       await TokenFreshAPI.get("/auth/refresh")
       return API(config);
     }

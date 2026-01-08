@@ -5,3 +5,12 @@ type User = {
   createdAt: Date,
   updatedAt: Date
 };
+
+type Session = {
+  _id: string,
+  ipAddress: string,
+  userAgent: string,
+  createdAt: string,
+  expiresAt: string,
+  isCurrent?: boolean
+};

@@ -1,12 +1,20 @@
 import { ModeToggle } from "@/components/mode-toggle"
-import { Outlet } from "react-router"
+import { NavLink, Outlet } from "react-router"
 
 function RootLayout() {
   return (
-    <div>
-      <ModeToggle />
+    <section>
+      <header className="p-4 flex justify-between items-center border-b">
+        <h1 className="text-3xl font-bold">Mern Auth</h1>
+
+        <div className="flex items-center gap-4">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/settings">Settings</NavLink>
+          <ModeToggle />
+        </div>
+      </header>
       <Outlet />
-    </div>
+    </section>
   )
 }
 

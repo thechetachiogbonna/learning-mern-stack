@@ -11,3 +11,11 @@ export const loginUser = async (userData: { email: string; password: string }) =
 export const fetchCurrentUser = async () => {
   return API.get("/user");
 }
+
+export const getSessions = async () => {
+  return API.get("/sessions") as Promise<{ sessions: Session[] }>;
+};
+
+export const revokeSession = async (sessionId: string) => {
+  return API.delete(`/sessions/${sessionId}`);
+};

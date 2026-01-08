@@ -32,7 +32,9 @@ function SignIn() {
     onSuccess: () => {
       form.reset()
       toast.success("Logged in successfully!")
-      navigate("/")
+      navigate("/", {
+        replace: true
+      })
     },
     onError: (error: Error) => {
       toast.error(`Error: ${error.message}`)

@@ -32,7 +32,7 @@ function SignUp() {
     onSuccess: () => {
       form.reset()
       toast.success("Account created successfully!")
-      navigate("/")
+      navigate("/", { replace: true });
     },
     onError: (error: Error) => {
       toast.error(`Error: ${error.message}`)
