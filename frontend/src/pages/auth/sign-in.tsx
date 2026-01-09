@@ -136,20 +136,30 @@ function SignIn() {
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
-        <Button
-          type="submit"
-          form="sign-in-form"
-          className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          {isPending ? "Logging In..." : "Log In"}
-        </Button>
+        <div className="w-full">
+          <Button
+            type="submit"
+            form="sign-in-form"
+            className="w-full"
+            disabled={isPending}
+          >
+            {isPending ? "Logging In..." : "Log In"}
+          </Button>
 
-        <div>
-          Don't have an account?{' '}
-          <NavLink to="/auth/sign-up" className="text-pink-600 hover:underline">
-            Sign Up
+          <NavLink
+            to="/auth/forgot-password"
+            className="text-sm text-blue-600 hover:underline text-end w-full block mt-2"
+          >
+            Forgot password?
           </NavLink>
         </div>
+
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <NavLink to="/auth/sign-up" className="font-medium text-blue-600 hover:underline">
+            Sign Up
+          </NavLink>
+        </p>
       </CardFooter>
     </Card>
   )

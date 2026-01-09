@@ -19,3 +19,7 @@ export const getSessions = async () => {
 export const revokeSession = async (sessionId: string) => {
   return API.delete(`/sessions/${sessionId}`);
 };
+
+export const requestPasswordReset = async (email: string) => {
+  return API.post("/auth/password/forgot", { email });
+}

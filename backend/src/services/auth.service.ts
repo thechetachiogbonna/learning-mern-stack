@@ -181,7 +181,7 @@ export const forgotPassword = async (email: string) => {
     expiresAt: oneHourFromNow()
   });
 
-  const url = `${APP_ORIGIN}/reset-password?code=${verificationCode._id}&exp=${verificationCode.expiresAt.getTime()}`
+  const url = `${APP_ORIGIN}auth/reset-password?code=${verificationCode._id}&exp=${verificationCode.expiresAt.getTime()}`
 
   const { success } = await sendEmail({
     to: user.email,

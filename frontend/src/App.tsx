@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, redirect, Route } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { Home, Settings, SignIn, SignUp } from "./pages";
+import { ForgotPassword, Home, Settings, SignIn, SignUp } from "./pages";
 import RootLayout from "./layouts/root-layout";
 import AuthLayout from "./layouts/auth-layout";
 import useUserStore from "./store/useUserStore";
@@ -18,13 +18,13 @@ function App() {
     return user;
   }
 
-
   const router = createBrowserRouter(createRoutesFromElements(
     <>
       {/* Public Routes */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="sign-up" element={<SignUp />} />
         <Route path="sign-in" element={<SignIn />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
       </Route>
 
       {/* Protected Routes */}

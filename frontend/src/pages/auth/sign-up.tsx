@@ -173,18 +173,18 @@ function SignUp() {
         <Button
           type="submit"
           form="sign-up-form"
-          className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full"
           disabled={isPending}
         >
           {isPending ? "Creating Account..." : "Create Account"}
         </Button>
 
-        <div>
+        <p className="text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <NavLink to="/auth/sign-in" className="text-pink-600 hover:underline">
+          <NavLink to="/auth/sign-in" className="font-medium text-blue-600 hover:underline">
             Sign In
           </NavLink>
-        </div>
+        </p>
       </CardFooter>
     </Card>
   )
