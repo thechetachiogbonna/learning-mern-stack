@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, redirect, Route } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { ForgotPassword, Home, Settings, SignIn, SignUp } from "./pages";
+import { ForgotPassword, Home, ResetPassword, Settings, SignIn, SignUp } from "./pages";
 import RootLayout from "./layouts/root-layout";
 import AuthLayout from "./layouts/auth-layout";
 import useUserStore from "./store/useUserStore";
@@ -25,6 +25,7 @@ function App() {
         <Route path="sign-up" element={<SignUp />} />
         <Route path="sign-in" element={<SignIn />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* Protected Routes */}

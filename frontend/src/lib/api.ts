@@ -23,3 +23,7 @@ export const revokeSession = async (sessionId: string) => {
 export const requestPasswordReset = async (email: string) => {
   return API.post("/auth/password/forgot", { email });
 }
+
+export const resetPassword = async (data: { verificationCode: string; password: string }) => {
+  return API.post("/auth/password/reset", data);
+}

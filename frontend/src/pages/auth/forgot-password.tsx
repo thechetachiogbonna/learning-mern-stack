@@ -80,7 +80,7 @@ function ForgotPassword() {
           >
             Try Another Email
           </Button>
-          <NavLink to="/sign-in" className="w-full">
+          <NavLink to="/auth/sign-in" className="w-full">
             <Button variant="ghost" className="w-full">
               Back to Sign In
             </Button>
@@ -139,7 +139,7 @@ function ForgotPassword() {
         </Button>
         <p className="text-center text-sm text-gray-600">
           Remember your password?{' '}
-          <NavLink to="/signin" className="font-medium text-blue-600 hover:underline">
+          <NavLink to="/auth/sign-in" className="font-medium text-blue-600 hover:underline">
             Sign In
           </NavLink>
         </p>
