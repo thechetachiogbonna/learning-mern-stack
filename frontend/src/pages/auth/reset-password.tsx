@@ -16,7 +16,7 @@ import {
   FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NavLink, useSearchParams, useNavigate } from "react-router"
+import { NavLink, useSearchParams } from "react-router"
 import { useMutation } from "@tanstack/react-query"
 import { resetPassword } from "@/lib/api"
 import { useState, useEffect } from "react"

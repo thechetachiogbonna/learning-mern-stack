@@ -12,7 +12,7 @@ function Settings() {
   if (isError) return <div>Error loading settings</div>
 
   return (
-    <div className="flex flex-col justify-start gap-4 pt-4 pb-10 h-screen w-full">
+    <div className="flex flex-col justify-start gap-4 py-4 h-screen w-full">
       {data?.sessions.map((session: Session) => (
         <SessionCard key={session._id} session={session} />
       ))}

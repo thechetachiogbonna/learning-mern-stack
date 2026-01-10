@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button"
 
 function EmailNotVerifiedAlert() {
   return (
-    <div className="h-dvh flex justify-center items-center">
-      <Alert variant="destructive" className="max-w-xl">
+    <div className="h-dvh flex justify-center py-5">
+      <Alert variant="destructive" className="max-w-xl h-max">
         <AlertCircleIcon />
         <AlertTitle>Email not verified</AlertTitle>
         <AlertDescription className="space-y-3">
