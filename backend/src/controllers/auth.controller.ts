@@ -1,12 +1,19 @@
 import { createAccount, forgotPassword, loginUser, refreshUserAccessToken, resetPassword, verifyEmail } from "../services/auth.service.js";
 import catchErrors from "../utils/catchErrors.js";
 import { setAuthCookies, clearAuthCookies, getRefreshTokenCookieOptions, getAccessTokenCookieOptions } from "../utils/cookie.js";
-import { CREATED, OK, UNAUTHORIZED } from "../config/http.js";
+import { CREATED, NOT_FOUND, OK, UNAUTHORIZED } from "../config/http.js";
 import { loginValidation, registerValidation, resetPasswordValidation } from "../validations/auth.js";
 import { verifyToken } from "../utils/jwt.js";
 import SessionModel from "../models/session.model.js";
 import appAssert from "../utils/appAssert.js";
 import z from "zod";
+import { oneHourFromNow } from "../utils/date.js";
+import VerificationModel from "../models/verification.model.js";
+import VerificationType from "../constants/verificationTypes.js";
+import { APP_ORIGIN } from "../constants/env.js";
+import sendEmail from "../utils/sendEmail.js";
+import { getVerifyEmailTemplate } from "../utils/emailTemplates.js";
+import UserModel from "../models/user.model.js";
 
 export const registerHandler = catchErrors(async (req, res) => {
   const request = registerValidation.parse({
@@ -93,4 +100,25 @@ export const resetPasswordHandler = catchErrors(async (req, res) => {
   await resetPassword(request);
 
   return clearAuthCookies(res).status(OK).json({ message: "Password reset successfully." });
+});
+
+export const resendEmailHandler = catchErrors(async (req, res) => {
+  const userId = z.string().length(24).parse(req.params.userId);
+
+  const user = await UserModel.findById(userId);
+  appAssert(user, NOT_FOUND, "User not found.");
+
+  const verificationCode = await VerificationModel.create({
+    userId,
+    type: VerificationType.emailVerification,
+    expiresAt: oneHourFromNow()
+  });
+  
+  const url = `${APP_ORIGIN}/email/verify/${verificationCode._id}`;
+  await sendEmail({
+    to: user.email,
+    ...getVerifyEmailTemplate(url)
+  })
+
+  return res.status(OK).json({ message: "Verification email resent successfully." });
 });

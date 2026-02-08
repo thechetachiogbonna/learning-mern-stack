@@ -10,6 +10,10 @@ import userRoutes from "./routes/user.route.js";
 import authenticate from "./middlewares/authenticate.middleware.js";
 import sessionRoutes from "./routes/session.route.js";
 
+import dns from "node:dns";
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 const app = express();
 
 app.use(express.json());

@@ -7,8 +7,16 @@ import {
   AlertTitle,
 } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { useMutation } from "@tanstack/react-query";
+import { resendVerificationEmail } from "@/lib/api";
+import { toast } from "sonner";
 
 function EmailNotVerifiedAlert() {
+  const { user } = useUserStore();
+  const { mutate: resendVerificationEmailMutation, isPending } = useMutation({
+    mutationFn: (userId: string) => resendVerificationEmail(userId)
+  })
+
   return (
     <div className="h-dvh flex justify-center py-5">
       <Alert variant="destructive" className="max-w-xl h-max">
@@ -24,12 +32,19 @@ function EmailNotVerifiedAlert() {
             variant="outline"
             size="sm"
             className="flex items-center gap-2 cursor-pointer"
+            disabled={isPending}
+            style={{ cursor: isPending ? "not-allowed" : "pointer" }}
             onClick={() => {
-              // call resend verification API here
+              if (!user) return toast.error("User not found.");
+              resendVerificationEmailMutation(user._id)
             }}
           >
-            <MailIcon className="h-4 w-4" />
-            Resend verification email
+           {isPending ? "Sending..." : (
+            <>
+              <MailIcon className="h-4 w-4" />
+              Resend verification email
+            </>
+           )}
           </Button>
         </AlertDescription>
       </Alert>
