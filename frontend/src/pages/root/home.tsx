@@ -79,7 +79,7 @@ function Home() {
   }
 
   if (hasResentEmail) {
-    return <EmailResentAlert onClose={() => setHasResentEmail(false)} />
+    return <EmailResentAlert />
   }
     
   if (!user.emailVerified) {
