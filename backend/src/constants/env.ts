@@ -1,6 +1,8 @@
 const getEnv = (key: string, defaultValue?: string): string => {
   const value = process.env[key] || defaultValue;
 
+  if (process.env.NODE_ENV === "test") return value || "";
+
   if (value === undefined) {
     throw new Error(`Environment variable ${key} is not set.`);
   }

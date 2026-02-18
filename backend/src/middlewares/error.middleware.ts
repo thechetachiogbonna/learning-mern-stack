@@ -33,6 +33,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     return handleAppError(res, err);
   }
 
+  console.log("here here in error middleware", err)
   return res.status(INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
 }
 
