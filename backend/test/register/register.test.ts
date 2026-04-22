@@ -45,17 +45,27 @@ describe("Register", () => {
 
   it ("should send verification email", async () => {
     const res = await request(app).post("/api/auth/register").send(userData);
-
-    console.log("Response status:", res.status);
-    console.log("Response body:", res.body);
     
     expect(res.status).toBe(201);
     expect(vi.mocked(sendEmail)).toHaveBeenCalled()
   })
   
-  // it("should set auth cookies", async () => {
-  //   const res = await request(app).post("/api/auth/register").send(userData);
+  it("should set auth cookies", async () => {
+    const res = await request(app).post("/api/auth/register").send(userData);
     
-  //   expect(res.headers.accessToken).toBeDefined()
-  // })
+    const cookies = res.headers["set-cookie"];
+    const accessToken = res.headers["set-cookie"]?.[0];
+    const refreshToken = res.headers["set-cookie"]?.[1];
+    
+    expect(cookies).toHaveLength(2)
+    
+    // accessToken
+    expect(accessToken).toBeDefined()
+    expect(accessToken).toContain("accessToken")
+    expect(accessToken).toContain("Path=/")
+    
+    // refreshToken
+    expect(refreshToken).toBeDefined()
+    expect(refreshToken).toContain("refreshToken")
+  })
 });
