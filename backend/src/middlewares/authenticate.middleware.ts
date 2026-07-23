@@ -5,7 +5,7 @@ import { verifyToken } from "../utils/jwt.js";
 import AppErrorCode from "../constants/appErrorCode.js";
 import SessionModel from "../models/session.model.js";
 
-const authenticate: RequestHandler = async (req, res, next) => {
+const authenticate: RequestHandler = async (req, _, next) => {
   try {
     const accessToken = req.cookies?.accessToken;
 

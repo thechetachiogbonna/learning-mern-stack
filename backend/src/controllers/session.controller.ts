@@ -1,5 +1,5 @@
 import z from "zod";
-import { NOT_FOUND, OK } from "../config/http.js";
+import { NOT_FOUND, OK, UNAUTHORIZED } from "../config/http.js";
 import SessionModel from "../models/session.model.js";
 import appAssert from "../utils/appAssert.js";
 import catchErrors from "../utils/catchErrors.js";
@@ -7,6 +7,9 @@ import catchErrors from "../utils/catchErrors.js";
 export const getSessionsHandler = catchErrors(async (req, res) => {
   const currentSessionId = req.sessionId;
   const userId = req.userId;
+
+  appAssert(currentSessionId, UNAUTHORIZED, "Session ID is missing");
+  appAssert(userId, UNAUTHORIZED, "User ID is missing");
 
   const sessions = await SessionModel.find({ userId }).sort({ createdAt: -1 });
 
@@ -21,6 +24,8 @@ export const getSessionsHandler = catchErrors(async (req, res) => {
 export const deleteSessionHandler = catchErrors(async (req, res) => {
   const sessionId = z.string().length(24).parse(req.params.id);
   const userId = req.userId;
+
+  appAssert(userId, UNAUTHORIZED, "User ID is missing");
 
   const session = await SessionModel.findOneAndDelete({
     _id: sessionId,

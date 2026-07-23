@@ -1,11 +1,10 @@
-import type mongoose from "mongoose";
-import type { mongo } from "mongoose";
+  import type mongoose from "mongoose";
 
-declare global {
-  namespace Express {
-    interface Request {
-      userId: mongoose.Types.ObjectId;
-      sessionId: mongoose.Types.ObjectId;
+  declare global {
+    namespace Express {
+      interface Request {
+        userId: mongoose.Types.ObjectId | undefined;
+        sessionId: mongoose.Types.ObjectId | undefined;
+      }
     }
   }
-}
