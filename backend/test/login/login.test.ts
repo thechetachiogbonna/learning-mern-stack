@@ -17,6 +17,9 @@ beforeEach(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
+
+  if (uri) {
+  }
 });
 
 afterEach(async () => {
@@ -28,17 +31,17 @@ afterEach(async () => {
   }
 });
 
-describe("Register", () => {
+describe("Login", () => {
   const userData = {
     email: "testuser@example.com",
     password: "password123",
     confirmPassword: "password123"
   };
 
-  it("should register a new user", async () => {
-    const res = await request(app).post("/api/auth/register").send(userData);
+  it("should log user in", async () => {
+    const res = await request(app).post("/api/auth/login").send(userData);
     
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("email", userData.email);
     expect(res.body).not.toHaveProperty("password");
     expect(res.body._id).toBeDefined();
